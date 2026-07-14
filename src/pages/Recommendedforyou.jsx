@@ -95,6 +95,7 @@ function RecommendedCard({ product, index }) {
         <img
           src={product.imageURL}
           alt={product.title}
+          loading="lazy"
           style={{
             maxHeight: '100%', maxWidth: '100%', objectFit: 'contain',
             transition: 'transform 0.25s',

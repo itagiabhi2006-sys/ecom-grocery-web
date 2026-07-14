@@ -12,6 +12,7 @@ export default function CartPage() {
   const [offerAmount, setOfferAmount] = useState(0);
   const [offerApplied, setOfferApplied] = useState(false);
   const [movingItems, setMovingItems] = useState(new Set());
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -38,6 +39,8 @@ export default function CartPage() {
       fetchOfferIfEligible(items);
     } catch {
       toast.error("Failed to load cart details");
+    } finally {
+      setIsInitialLoad(false);
     }
   };
 
@@ -129,6 +132,17 @@ export default function CartPage() {
   const isMoving = (id) => movingItems.has(id);
 
   /* ─── EMPTY STATE ─── */
+  if (isInitialLoad) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "#f9fafb", fontSize: "16px", fontWeight: "600", color: "#6b7280" }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div className="animate-spin" style={{ fontSize: 32 }}>⏳</div>
+          Loading cart...
+        </div>
+      </div>
+    );
+  }
+
   if (!cart.length) {
     return (
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 24px", textAlign: "center", minHeight: "100vh", background: "#f9fafb" }}>
@@ -206,7 +220,7 @@ export default function CartPage() {
                 }}>
                   {/* Image */}
                   <div style={{ width: 56, height: 56, borderRadius: 8, background: "#f9fafb", border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <img src={prod.imageURL || "/no-image.png"} alt={prod.title || "Product"} style={{ width: 48, height: 48, objectFit: "contain" }} />
+                    <img src={prod.imageURL || "/no-image.png"} alt={prod.title || "Product"} loading="lazy" style={{ width: 48, height: 48, objectFit: "contain" }} />
                   </div>
 
                   {/* Info */}
@@ -306,7 +320,7 @@ export default function CartPage() {
                           className="rec-card-hover"
                         >
                           <div style={{ width: "100%", height: 70, background: "#fff", borderRadius: 6, border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                            <img src={p.imageURL || "/no-image.png"} alt={p.title} style={{ height: 56, width: 56, objectFit: "contain" }} />
+                            <img src={p.imageURL || "/no-image.png"} alt={p.title} loading="lazy" style={{ height: 56, width: 56, objectFit: "contain" }} />
                           </div>
                           <p style={{ fontSize: 11, fontWeight: 500, color: "#374151", textAlign: "center", margin: "0 0 4px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.3 }}>{p.title}</p>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#059669", margin: "0 0 6px" }}>₹{rPrice}</p>

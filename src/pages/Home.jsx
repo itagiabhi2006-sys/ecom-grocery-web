@@ -99,7 +99,7 @@ function DealCard({ p }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14,
       }}>
         <img
-          src={p.imageURL || p.image} alt={p.name}
+          src={p.imageURL || p.image} alt={p.name} loading="lazy"
           style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s' }}
         />
       </div>
@@ -228,7 +228,7 @@ function FeaturedCategoryCard({ cat, navigate }) {
         background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)',
         borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10,
       }}>
-        <img src={cat.imageURL} alt={cat.name} style={{ width: 46, height: 46, objectFit: 'contain' }} />
+        <img src={cat.imageURL} alt={cat.name} loading="lazy" style={{ width: 46, height: 46, objectFit: 'contain' }} />
       </div>
       <div style={{ fontWeight: 700, fontSize: 12, color: '#111827', textAlign: 'center', lineHeight: 1.3 }}>{cat.name}</div>
       <div style={{ fontSize: 10.5, color: '#9ca3af', fontWeight: 600, marginTop: 3 }}>
@@ -612,7 +612,7 @@ export default function Home() {
                     onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
                   >
                     <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', padding: 12 }}>
-                      <img src={cat.imageURL} alt={cat.name} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                      <img src={cat.imageURL} alt={cat.name} loading="lazy" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                     </div>
                     <div style={{ padding: '9px 11px 12px' }}>
                       <div style={{ fontWeight: 700, fontSize: 12.5, color: '#111827' }}>{cat.name}</div>
@@ -676,7 +676,7 @@ export default function Home() {
                   onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(79,70,229,0.12)'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
                   onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
                 >
-                  <img src={cat.imageURL} alt={cat.name} style={{ height: 56, width: 56, objectFit: 'contain', margin: '0 auto 8px' }} />
+                  <img src={cat.imageURL} alt={cat.name} loading="lazy" style={{ height: 56, width: 56, objectFit: 'contain', margin: '0 auto 8px' }} />
                   <div style={{ fontWeight: 700, fontSize: 12.5, color: '#111827' }}>{cat.name}</div>
                   <div style={{ fontSize: 10.5, color: '#9ca3af', fontWeight: 600, marginTop: 3 }}>{cat.totalOrders} orders</div>
                 </div>

@@ -339,6 +339,7 @@ export default function ProductCard({ p }) {
           <img
             src={p.imageURL || '/api/placeholder/300/300'}
             alt={p.title}
+            loading="lazy"
             style={{
               maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',
               transform: isHovered ? 'scale(1.09)' : 'scale(1)',

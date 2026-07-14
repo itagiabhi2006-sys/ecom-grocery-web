@@ -79,6 +79,7 @@ function FestivalOfferCard({ p }) {
         <img
           src={p.imageURL || p.image}
           alt={p.title || p.name}
+          loading="lazy"
           style={{
             maxHeight: '100%', maxWidth: '100%', objectFit: 'contain',
             filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.4))',
