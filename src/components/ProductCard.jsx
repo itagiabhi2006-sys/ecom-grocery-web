@@ -337,7 +337,7 @@ export default function ProductCard({ p }) {
           }} />
 
           <img
-            src={p.imageURL || '/api/placeholder/300/300'}
+            src={p.imageURL || '/no-image.png'}
             alt={p.title}
             loading="lazy"
             style={{
@@ -349,7 +349,7 @@ export default function ProductCard({ p }) {
                 ? `drop-shadow(0 10px 22px ${BLUE_GLOW})`
                 : 'drop-shadow(0 2px 8px rgba(0,0,0,0.09))',
             }}
-            onError={e => { e.target.onerror = null; e.target.src = '/api/placeholder/300/300' }}
+            onError={e => { e.target.onerror = null; e.target.src = '/no-image.png' }}
           />
 
           <div style={{
