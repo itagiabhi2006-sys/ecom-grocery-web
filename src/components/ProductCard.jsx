@@ -40,6 +40,7 @@ export default function ProductCard({ p }) {
   const [wishlistLoading, setWishlistLoading] = useState(false)
   const [addingToCart, setAddingToCart]       = useState(false)
   const [checkingWishlist, setCheckingWishlist] = useState(true)
+  const [imageLoaded, setImageLoaded]         = useState(false)
   const { user } = useAuth()
 
   // ── Price resolution ──────────────────────────────────────────────────────
@@ -363,20 +364,34 @@ export default function ProductCard({ p }) {
             transition: 'opacity 0.28s',
           }} />
 
+          {/* Image skeleton loader */}
+          {!imageLoaded && (
+            <div style={{
+              position: 'absolute', inset: 20,
+              background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 1.5s infinite',
+              borderRadius: 12,
+              zIndex: 0
+            }} />
+          )}
+
           <img
             src={p.imageURL || '/no-image.png'}
             alt={p.title}
             loading="lazy"
+            onLoad={() => setImageLoaded(true)}
             style={{
               maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',
               transform: isHovered ? 'scale(1.09)' : 'scale(1)',
-              transition: 'transform 0.38s ease',
+              transition: 'transform 0.38s ease, opacity 0.3s ease',
+              opacity: imageLoaded ? 1 : 0,
               position: 'relative', zIndex: 1,
               filter: isHovered
                 ? `drop-shadow(0 10px 22px ${BLUE_GLOW})`
                 : 'drop-shadow(0 2px 8px rgba(0,0,0,0.09))',
             }}
-            onError={e => { e.target.onerror = null; e.target.src = '/no-image.png' }}
+            onError={e => { e.target.onerror = null; e.target.src = '/no-image.png'; setImageLoaded(true); }}
           />
 
           <div style={{
