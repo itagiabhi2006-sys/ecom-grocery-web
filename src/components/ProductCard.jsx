@@ -7,6 +7,33 @@ import toast from 'react-hot-toast'
 import api from '../Api'
 import { useAuth } from '../contexts/AuthContext'
 
+// Module-level cache to prevent multiple identical requests when rendering many ProductCards
+let wishlistCache = {};
+let wishlistPromises = {};
+
+const fetchUserWishlist = (userId) => {
+  if (!wishlistPromises[userId]) {
+    wishlistPromises[userId] = api.get(`/wishlist/${userId}`)
+      .then(res => {
+        wishlistCache[userId] = res.data || [];
+        // Cache the promise/result for a short time to deduplicate concurrent requests
+        setTimeout(() => { wishlistPromises[userId] = null; }, 5000);
+        return wishlistCache[userId];
+      })
+      .catch(err => {
+        wishlistPromises[userId] = null;
+        console.error('Error fetching wishlist:', err);
+        return [];
+      });
+  }
+  return wishlistPromises[userId];
+};
+
+// Force a cache invalidation (useful after updates)
+const invalidateWishlistCache = (userId) => {
+  wishlistPromises[userId] = null;
+};
+
 export default function ProductCard({ p }) {
   const [isHovered, setIsHovered]            = useState(false)
   const [isLiked, setIsLiked]                = useState(false)
@@ -35,19 +62,13 @@ export default function ProductCard({ p }) {
     }
 
     try {
-      // Try multiple possible endpoints
+      // Fetch user's wishlist using the shared cache
       let wishlistItems = []
-      
-      // Try fetching user's wishlist
-      
-        // Try alternative endpoint
-        try {
-          const response = await api.get(`/wishlist/${user.id}`)
-          wishlistItems = response.data || []
-        } catch (err) {
-          console.error('Error fetching wishlist:', err)
-        }
-      
+      try {
+        wishlistItems = await fetchUserWishlist(user.id)
+      } catch (err) {
+        console.error('Error fetching wishlist:', err)
+      }
       
       // Check if current product is in wishlist
       const isInWishlist = wishlistItems.some(item => {
@@ -120,6 +141,9 @@ export default function ProductCard({ p }) {
           setIsLiked(false)
           toast.success('Removed from wishlist!')
           
+          // Force cache invalidation on success
+          invalidateWishlistCache(user.id);
+
           // Store the update in localStorage for cross-tab sync
           localStorage.setItem('wishlistUpdate', JSON.stringify({ 
             productId: p.id, 
@@ -142,6 +166,9 @@ export default function ProductCard({ p }) {
         if (response.status === 200 || response.status === 201) {
           setIsLiked(true)
           toast.success('Added to wishlist!')
+          
+          // Force cache invalidation on success
+          invalidateWishlistCache(user.id);
           
           // Store the update in localStorage for cross-tab sync
           localStorage.setItem('wishlistUpdate', JSON.stringify({ 

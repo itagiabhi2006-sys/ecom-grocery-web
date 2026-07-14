@@ -307,22 +307,29 @@ export default function Home() {
     const loadData = async () => {
       try {
         const [
-          homeData,
-          trendingCategories,
-          deals,
+          categoriesRes,
+          trendingProductsRes,
+          mostBoughtRes,
+          trendingCategoriesRes,
+          dealsRes,
         ] = await Promise.all([
-          api.get("/api/home/data"),
+          api.get("/categories"),
+          api.get("/analytics/trending-products?limit=8"),
+          api.get("/analytics/most-bought?limit=8"),
           api.get("/analytics/trending-categories?limit=5"),
-          api.get("/deals"),
+          api.get("/all-offers"),
         ]);
 
-        setCategories(homeData.data.categories || []);
-        setTrendingProducts(homeData.data.trendingProducts || []);
-        setMostBought(homeData.data.mostBought || []);
-        setTrendingCategories(trendingCategories.data || []);
-        setDeals(deals.data || []);
+        setCategories(categoriesRes.data || []);
+        setTrendingProducts(trendingProductsRes.data || []);
+        setMostBought(mostBoughtRes.data || []);
+        setTrendingCategories(trendingCategoriesRes.data || []);
+        
+        // For Deals of the week, filter from all offers
+        const allOffers = dealsRes.data || [];
+        setDeals(allOffers.filter(p => p.dealOfWeek) || []);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching home data:', err);
       }
     };
 
