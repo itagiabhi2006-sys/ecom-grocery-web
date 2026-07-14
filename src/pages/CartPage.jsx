@@ -32,7 +32,7 @@ export default function CartPage() {
   const loadCart = async () => {
     try {
       const res = await api.get(`/get-cart-details/${user.id}`);
-      const items = res.data || [];
+      const items = Array.isArray(res.data) ? res.data : [];
       setCart(items);
       loadCartRecommend(items);
       fetchOfferIfEligible(items);

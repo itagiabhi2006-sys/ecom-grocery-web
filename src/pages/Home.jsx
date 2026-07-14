@@ -304,34 +304,30 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-  const loadData = async () => {
-    try {
-      const [
-        categories,
-        trendingProducts,
-        mostBought,
-        trendingCategories,
-        deals,
-      ] = await Promise.all([
-        api.get("/categories"),
-        api.get("/analytics/trending-products?limit=5"),
-        api.get("/analytics/most-bought?limit=5"),
-        api.get("/analytics/trending-categories?limit=5"),
-        api.get("/deals"),
-      ]);
+    const loadData = async () => {
+      try {
+        const [
+          homeData,
+          trendingCategories,
+          deals,
+        ] = await Promise.all([
+          api.get("/api/home/data"),
+          api.get("/analytics/trending-categories?limit=5"),
+          api.get("/deals"),
+        ]);
 
-      setCategories(categories.data);
-      setTrendingProducts(trendingProducts.data);
-      setMostBought(mostBought.data);
-      setTrendingCategories(trendingCategories.data);
-      setDeals(deals.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+        setCategories(homeData.data.categories || []);
+        setTrendingProducts(homeData.data.trendingProducts || []);
+        setMostBought(homeData.data.mostBought || []);
+        setTrendingCategories(trendingCategories.data || []);
+        setDeals(deals.data || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-  loadData();
-}, []);
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (!user) return;

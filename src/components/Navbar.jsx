@@ -858,8 +858,8 @@ export default function Navbar() {
         api.get(`/total-cart-item/${userId}`),
         api.get(`/total-wishlist-item/${userId}`)
       ]);
-      setCartCount(cartRes.data || 0);
-      setWishCount(wishRes.data || 0);
+      setCartCount(Number(cartRes.data) || 0);
+      setWishCount(Number(wishRes.data) || 0);
     } catch {
       setCartCount(0);
       setWishCount(0);
@@ -894,12 +894,7 @@ export default function Navbar() {
     return () => { delete window.refreshNavbarCounts; };
   }, [effectiveUser]);
 
-  /* ── periodic refresh every 5s ── */
-  useEffect(() => {
-    if (!effectiveUser) return;
-    const interval = setInterval(fetchCounts, 5000);
-    return () => clearInterval(interval);
-  }, [effectiveUser]);
+  /* ── periodic refresh removed to reduce API calls ── */
 
   /* ── sync user from context ── */
   useEffect(() => {
