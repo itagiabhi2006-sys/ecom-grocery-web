@@ -60,20 +60,38 @@ function ScrollToTop() {
 export default function App() {
 
   /* ── Token refresh + heartbeat ── */
-  useEffect(() => {
-    const refreshToken = async () => {
-      try { await api.post("/refresh-token"); }
-      catch (err) { console.error("Error refreshing token:", err.response?.data?.message || err.message); }
-    };
-    const heartbeat = () => {
-      try { api.post("/heartbeat"); } catch(err) { console.error(err); }
-    };
-    refreshToken();
-    heartbeat();
-    const tokenInterval     = setInterval(refreshToken, 2 * 60 * 1000);
-    const heartbeatInterval = setInterval(heartbeat, 20000);
-    return () => { clearInterval(tokenInterval); clearInterval(heartbeatInterval); };
-  }, []);
+ const { user } = useAuth();
+
+useEffect(() => {
+  if (!user) return;
+
+  const refreshToken = async () => {
+    try {
+      await api.post("/refresh-token");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const heartbeat = async () => {
+    try {
+      await api.post("/heartbeat");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  refreshToken();
+  heartbeat();
+
+  const refreshInterval = setInterval(refreshToken, 120000);
+  const heartbeatInterval = setInterval(heartbeat, 20000);
+
+  return () => {
+    clearInterval(refreshInterval);
+    clearInterval(heartbeatInterval);
+  };
+}, [user]);
 
   return (
     <Routes>
