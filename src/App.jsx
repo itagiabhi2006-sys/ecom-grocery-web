@@ -44,8 +44,7 @@ import CategoriesPage from './pages/Categoriespage';
 import { Contact } from 'lucide-react';
 import ContactPage from './pages/ContactPage';
 
-import { useAuth } from './context/AuthContext';
-
+import { useAuth } from '../contexts/AuthContext';
 
 
 
