@@ -25,6 +25,7 @@ export default function Checkout() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showManualForm, setShowManualForm] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", address: "", city: "", pincode: "" });
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -33,8 +34,13 @@ export default function Checkout() {
       navigate("/login");
       return;
     }
-    loadCart();
-    loadSavedAddresses();
+    
+    const init = async () => {
+      setIsInitialLoad(true);
+      await Promise.all([loadCart(), loadSavedAddresses()]);
+      setIsInitialLoad(false);
+    };
+    init();
   }, [user]);
 
   const loadCart = async () => {
@@ -130,6 +136,26 @@ export default function Checkout() {
 
   const rawTotal = cart.reduce((sum, c) => sum + resolvePrice(c.products) * c.quantity, 0);
   const finalTotal = offerApplied ? rawTotal - offerAmount : rawTotal;
+
+  if (isInitialLoad) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "#f9fafb", fontSize: "16px", fontWeight: "600", color: "#6b7280" }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div className="animate-spin" style={{ fontSize: 32 }}>⏳</div>
+          Loading checkout...
+        </div>
+        <style>{`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          .animate-spin {
+            animation: spin 0.8s linear infinite;
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
