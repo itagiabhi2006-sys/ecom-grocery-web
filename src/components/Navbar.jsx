@@ -813,6 +813,7 @@ import {
   Package, LogOut, LayoutGrid, ShoppingBag, Phone, Tag,
 } from "lucide-react";
 import api from "../Api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Navbar() {
   const { user: ctxUser } = useAuth();
@@ -824,8 +825,11 @@ export default function Navbar() {
     catch { return ctxUser || null; }
   });
 
-  const [categories, setCategories]               = useState([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => api.get('/categories').then(res => res.data)
+  });
+
   const [categoryOpen, setCategoryOpen]           = useState(false);
   const [menuOpen, setMenuOpen]                   = useState(false);
   const [searchTerm, setSearchTerm]               = useState("");
@@ -840,14 +844,6 @@ export default function Navbar() {
   const userMenuRef   = useRef(null);
   const searchRef     = useRef(null);
   const searchTimeout = useRef(null);
-
-  /* ── fetch categories ── */
-  useEffect(() => {
-    api.get("/categories")
-      .then(r => setCategories(r.data || []))
-      .catch(() => setCategories([]))
-      .finally(() => setCategoriesLoading(false));
-  }, []);
 
   /* ── fetch cart & wishlist counts ── */
   const fetchCounts = async () => {

@@ -7,6 +7,9 @@ import api from "./Api";
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const Home = lazy(() => import('./pages/Home'));
 const OrderSuccess = lazy(() => import('./pages/OrderSuccess'));
@@ -83,20 +86,25 @@ useEffect(() => {
     }
   };
 
-  refreshToken();
-  heartbeat();
+  // Delay the initial calls so they don't block render
+  const initialDelay = setTimeout(() => {
+    refreshToken();
+    heartbeat();
+  }, 5000);
 
   const refreshInterval = setInterval(refreshToken, 120000);
   const heartbeatInterval = setInterval(heartbeat, 20000);
 
   return () => {
+    clearTimeout(initialDelay);
     clearInterval(refreshInterval);
     clearInterval(heartbeatInterval);
   };
 }, [user]);
 
   return (
-    <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '18px', fontWeight: 'bold' }}>Loading...</div>}>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '18px', fontWeight: 'bold' }}>Loading...</div>}>
       <Routes>
 
         {/* ════════════════════════════════════════════════════════════════════
@@ -176,5 +184,6 @@ useEffect(() => {
 
       </Routes>
     </Suspense>
+    </QueryClientProvider>
   );
 }
