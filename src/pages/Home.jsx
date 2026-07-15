@@ -296,61 +296,6 @@ const HeroSlider = memo(function HeroSlider({ navigate }) {
   }, []);
 
   return (
-    <HeroSlider navigate={navigate} />
-  );
-});
-
-/* ── Main Home ─────────────────────────────────────────────────────────── */
-export default function Home() {
-  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => api.get('/categories').then(res => res.data) });
-  const [trendingProducts,   setTrendingProducts]   = useState([]);
-  const [mostBought,         setMostBought]         = useState([]);
-  const [buyAgain,           setBuyAgain]           = useState([]);
-  const [trendingCategories, setTrendingCategories] = useState([]);
-  const [deals,              setDeals]              = useState([]);
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [
-                    trendingProductsRes,
-          mostBoughtRes,
-          trendingCategoriesRes,
-          dealsRes,
-        ] = await Promise.all([
-                    api.get("/analytics/trending-products?limit=8"),
-          api.get("/analytics/most-bought?limit=8"),
-          api.get("/analytics/trending-categories?limit=5"),
-          api.get("/all-offers"),
-        ]);
-
-                setTrendingProducts(trendingProductsRes.data || []);
-        setMostBought(mostBoughtRes.data || []);
-        setTrendingCategories(trendingCategoriesRes.data || []);
-        
-        // For Deals of the week, filter from all offers
-        const allOffers = dealsRes.data || [];
-        setDeals(allOffers.filter(p => p.dealOfWeek) || []);
-      } catch (err) {
-        console.error('Error fetching home data:', err);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    api.get(`/analytics/buy-again/${user.id}?limit=5`).then(r => setBuyAgain(r.data)).catch(() => {});
-  }, [user]);
-
-  return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px 0' }}>
-
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section style={{ marginBottom: 10, position: 'relative' }}>
           <div style={{
             background: H.bg,
@@ -503,7 +448,62 @@ export default function Home() {
               }} />
             ))}
           </div>
-        </section>
+        </section>
+  );
+});
+
+/* ── Main Home ─────────────────────────────────────────────────────────── */
+export default function Home() {
+  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => api.get('/categories').then(res => res.data) });
+  const [trendingProducts,   setTrendingProducts]   = useState([]);
+  const [mostBought,         setMostBought]         = useState([]);
+  const [buyAgain,           setBuyAgain]           = useState([]);
+  const [trendingCategories, setTrendingCategories] = useState([]);
+  const [deals,              setDeals]              = useState([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [
+                    trendingProductsRes,
+          mostBoughtRes,
+          trendingCategoriesRes,
+          dealsRes,
+        ] = await Promise.all([
+                    api.get("/analytics/trending-products?limit=8"),
+          api.get("/analytics/most-bought?limit=8"),
+          api.get("/analytics/trending-categories?limit=5"),
+          api.get("/all-offers"),
+        ]);
+
+                setTrendingProducts(trendingProductsRes.data || []);
+        setMostBought(mostBoughtRes.data || []);
+        setTrendingCategories(trendingCategoriesRes.data || []);
+        
+        // For Deals of the week, filter from all offers
+        const allOffers = dealsRes.data || [];
+        setDeals(allOffers.filter(p => p.dealOfWeek) || []);
+      } catch (err) {
+        console.error('Error fetching home data:', err);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    api.get(`/analytics/buy-again/${user.id}?limit=5`).then(r => setBuyAgain(r.data)).catch(() => {});
+  }, [user]);
+
+  return (
+    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px 0' }}>
+
+        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+        <HeroSlider navigate={navigate} />
 
         {/* ══ FEATURED CATEGORIES ROW ═══════════════════════════════════════ */}
         {categories.length > 0 && (
