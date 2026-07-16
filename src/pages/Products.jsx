@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Leaf, ChevronDown } from 'lucide-react';
 import api from '../Api';
@@ -14,6 +14,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('default');
   const [sortOpen, setSortOpen] = useState(false);
+  const [displayCount, setDisplayCount] = useState(12);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -42,15 +43,31 @@ export default function ProductsPage() {
     }
   };
 
-  const filtered = products
-    .filter(p => selectedCategory === 'All' || p.category?.name === selectedCategory || p.category === selectedCategory || p.categoryName === selectedCategory)
-    .sort((a, b) => {
-      if (sortBy === 'price-asc') return (a.price || 0) - (b.price || 0);
-      if (sortBy === 'price-desc') return (b.price || 0) - (a.price || 0);
-      if (sortBy === 'name-asc') return a.title?.localeCompare(b.title);
-      if (sortBy === 'name-desc') return b.title?.localeCompare(a.title);
-      return 0;
-    });
+  const filtered = useMemo(() => {
+    return products
+      .filter(p => selectedCategory === 'All' || p.category?.name === selectedCategory || p.category === selectedCategory || p.categoryName === selectedCategory)
+      .sort((a, b) => {
+        if (sortBy === 'price-asc') return (a.price || 0) - (b.price || 0);
+        if (sortBy === 'price-desc') return (b.price || 0) - (a.price || 0);
+        if (sortBy === 'name-asc') return a.title?.localeCompare(b.title);
+        if (sortBy === 'name-desc') return b.title?.localeCompare(a.title);
+        return 0;
+      });
+  }, [products, selectedCategory, sortBy]);
+
+  useEffect(() => {
+    setDisplayCount(12);
+  }, [selectedCategory, sortBy]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 500) {
+        setDisplayCount(prev => (prev < filtered.length ? prev + 12 : prev));
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [filtered.length]);
 
   const sortOptions = [
     { value: 'default',    label: 'Featured' },
@@ -255,7 +272,7 @@ export default function ProductsPage() {
             gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", 
             gap: "80px 24px",  // row gap 32px, column gap 24px
           }}>
-            {filtered.map((p) => (
+            {filtered.slice(0, displayCount).map((p) => (
               <div key={p.id} onClick={() => handleProductClick(p)} style={{ cursor: "pointer" }}>
                 <ProductCard p={p} />
               </div>

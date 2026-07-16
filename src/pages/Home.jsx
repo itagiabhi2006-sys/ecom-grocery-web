@@ -97,6 +97,105 @@ const DealCard = memo(function DealCard({ p }) {
       <div style={{
         height: 155, background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14,
+import React, { useEffect, useState, memo, Suspense, lazy } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import ProductCard from '../components/ProductCard';
+import api from '../Api';
+import { useAuth } from "../contexts/AuthContext";
+import { optimizeImage } from '../utils/imageOptimizer';
+import { useNavigate } from 'react-router-dom';
+import {
+  ChevronLeft, ChevronRight, ChevronDown, Flame, Star,
+  RotateCcw, TrendingUp, ArrowRight, Tag,
+  ShoppingCart, Apple, Sparkles, Zap, Shield, RotateCw,
+} from 'lucide-react';
+const FestivalOfferSection = lazy(() => import('./Festivaloffersection'));
+const RecommendedSection = lazy(() => import('./Recommendedsection'));
+const FrequentlyViewedSection = lazy(() => import('./Frequentlyviewedsection'));
+
+/* ── Shared helpers ────────────────────────────────────────────────────── */
+
+function resolvePrice(p) {
+  return p.discountFinalPrice ?? p.price ?? 0;
+}
+
+const SectionHeader = memo(function SectionHeader({ icon, label, title, subtitle, accent = '#1a1a6e' }) {
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+        <div style={{
+          width: 3, height: 18, borderRadius: 2,
+          background: `linear-gradient(180deg, ${accent}, #4f46e5)`,
+        }} />
+        {icon}
+        <span style={{
+          fontSize: 10, fontWeight: 800, letterSpacing: 2.5,
+          textTransform: 'uppercase', color: '#9ca3af',
+        }}>{label}</span>
+      </div>
+      <h2 style={{
+        fontSize: 26, fontWeight: 900, color: '#111827', margin: 0,
+        letterSpacing: '-0.4px',
+      }}>{title}</h2>
+      {subtitle && (
+        <p style={{ fontSize: 13, color: '#9ca3af', fontWeight: 500, marginTop: 6 }}>{subtitle}</p>
+      )}
+    </div>
+  );
+});
+
+const ProductSection = memo(function ProductSection({ icon, label, title, products, subtitle }) {
+  return (
+    <section style={{ padding: '0 0 56px' }}>
+      <SectionHeader icon={icon} label={label} title={title} subtitle={subtitle} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 18 }}>
+        {products.map(p => <ProductCard key={p.id} p={p} />)}
+      </div>
+    </section>
+  );
+});
+
+/* ── Deal Card ─────────────────────────────────────────────────────────── */
+const DealCard = memo(function DealCard({ p }) {
+  const navigate   = useNavigate();
+  const discount   = p.discountPercent || 0;
+  const origPrice  = p.price;
+  const finalPrice = resolvePrice(p);
+
+  return (
+    <div
+      onClick={() => navigate(`/product/${p.id}`)}
+      style={{
+        background: '#fff', borderRadius: 16, overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.8)',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        cursor: 'pointer', transition: 'all 0.25s', position: 'relative',
+      }}
+      onMouseOver={e => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.14)';
+        e.currentTarget.style.borderColor = 'rgba(79,70,229,0.3)';
+      }}
+      onMouseOut={e => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)';
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)';
+      }}
+    >
+      {discount > 0 && (
+        <div style={{
+          position: 'absolute', top: 10, left: 10, zIndex: 10,
+          background: 'linear-gradient(135deg,#ef4444,#dc2626)',
+          color: '#fff', fontWeight: 800, fontSize: 10,
+          borderRadius: 8, padding: '3px 9px',
+          boxShadow: '0 2px 8px rgba(239,68,68,0.4)',
+        }}>
+          -{discount}%
+        </div>
+      )}
+      <div style={{
+        height: 155, background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14,
       }}>
         <img
           src={optimizeImage(p.imageURL || p.image, 300)} alt={p.name} loading="lazy" width="140" height="127"
@@ -104,7 +203,7 @@ const DealCard = memo(function DealCard({ p }) {
         />
       </div>
       <div style={{ padding: '12px 14px 15px' }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>{p.name}</div>
+        <h3 style={{ fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 4, lineHeight: 1.35, margin: 0 }}>{p.name}</h3>
         {p.weight && <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500, marginBottom: 8 }}>{p.weight}</div>}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 17, fontWeight: 900, color: '#16a34a' }}>₹{finalPrice}</span>
@@ -230,7 +329,7 @@ const FeaturedCategoryCard = memo(function FeaturedCategoryCard({ cat, navigate 
       }}>
         <img src={optimizeImage(cat.imageURL, 100)} alt={cat.name} loading="lazy" width="46" height="46" style={{ width: 46, height: 46, objectFit: 'contain' }} />
       </div>
-      <div style={{ fontWeight: 700, fontSize: 12, color: '#111827', textAlign: 'center', lineHeight: 1.3 }}>{cat.name}</div>
+      <h3 style={{ fontWeight: 700, fontSize: 12, color: '#111827', textAlign: 'center', lineHeight: 1.3, margin: 0 }}>{cat.name}</h3>
       <div style={{ fontSize: 10.5, color: '#9ca3af', fontWeight: 600, marginTop: 3 }}>
         {cat.productCount ?? cat.products?.length ?? 0} Products
       </div>
@@ -257,7 +356,7 @@ const TrustItem = memo(function TrustItem({ icon, title, sub, isLast }) {
       }}>
         {icon}
       </div>
-      <div style={{ fontWeight: 800, fontSize: 13, color: '#111827', marginBottom: 3 }}>{title}</div>
+      <h3 style={{ fontWeight: 800, fontSize: 13, color: '#111827', marginBottom: 3, margin: '0 0 3px 0' }}>{title}</h3>
       <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500 }}>{sub}</div>
     </div>
   );
@@ -447,7 +546,7 @@ const HeroSlider = memo(function HeroSlider({ navigate }) {
               }} />
             ))}
           </div>
-        </section>
+        </section>
   );
 });
 
@@ -503,198 +602,6 @@ export default function Home() {
 
         {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <HeroSlider navigate={navigate} />
-
-        {/* ══ FEATURED CATEGORIES ROW ═══════════════════════════════════════ */}
-        {categories.length > 0 && (
-          <section style={{ padding: '0 0 40px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(categories.length, 6)}, 1fr)`, gap: 14 }}>
-              {categories.slice(0, 6).map(cat => (
-                <FeaturedCategoryCard key={cat.id} cat={cat} navigate={navigate} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ══ PROMOTIONAL BANNERS ══════════════════════════════════════════ */}
-        <section style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 18, marginBottom: 44 }}>
-          {/* Main promo */}
-          <div
-            onClick={() => navigate('/offers')}
-            style={{
-              background: 'linear-gradient(135deg, #1a1a6e 0%, #2d2d8e 50%, #4338ca 100%)',
-              borderRadius: 20, padding: '32px 36px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              cursor: 'pointer', position: 'relative', overflow: 'hidden',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 4px 24px rgba(26,26,110,0.25)',
-            }}
-            onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.015)'; e.currentTarget.style.boxShadow = '0 10px 36px rgba(26,26,110,0.35)'; }}
-            onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(26,26,110,0.25)'; }}
-          >
-            <div style={{ position: 'absolute', right: -50, top: -50, width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
-            <div style={{ position: 'absolute', left: '40%', bottom: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#a5b4fc', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>🔥 Hot Deals</div>
-              <div style={{ fontSize: 30, fontWeight: 900, color: '#fbbf24', lineHeight: 1 }}>Price Drop</div>
-              <div style={{ fontSize: 17, fontWeight: 800, color: '#fff', marginTop: 6, maxWidth: 300 }}>Discount on the products! Check it out!</div>
-              <button style={{
-                marginTop: 20, background: '#fff', color: '#1a1a6e',
-                border: 'none', padding: '10px 22px', borderRadius: 50,
-                fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              }}>Shop Now →</button>
-            </div>
-            <div style={{ fontSize: 68, opacity: 0.7, position: 'relative', zIndex: 1 }}>🛒</div>
-          </div>
-
-          {/* Side promo */}
-          <div
-            onClick={() => navigate('/products')}
-            style={{
-              background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-              borderRadius: 20, padding: '24px 22px',
-              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-              cursor: 'pointer', border: '1px solid #fcd34d',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 2px 12px rgba(234,179,8,0.15)',
-            }}
-            onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.015)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(234,179,8,0.25)'; }}
-            onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(234,179,8,0.15)'; }}
-          >
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 800, color: '#92400e', letterSpacing: 1.8, textTransform: 'uppercase' }}>All Fixed Stars</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#78350f', marginTop: 6, lineHeight: 1.35 }}>Dark Wash Face Wash<br />& Daily Essentials</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{
-                background: 'linear-gradient(135deg,#ef4444,#dc2626)',
-                color: '#fff', width: 52, height: 52, borderRadius: '50%',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(239,68,68,0.35)',
-              }}>
-                <div style={{ fontSize: 16, fontWeight: 900, lineHeight: 1 }}>10%</div>
-                <div style={{ fontSize: 9, fontWeight: 700 }}>Off</div>
-              </div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#92400e' }}>Shop Now →</span>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ TRUST BAR ════════════════════════════════════════════════════ */}
-        <section style={{
-          display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
-          background: '#fff', borderRadius: 18, marginBottom: 44,
-          border: '1px solid #f1f5f9',
-          boxShadow: '0 2px 16px rgba(0,0,0,0.04)', overflow: 'hidden',
-        }}>
-          <TrustItem icon={<Zap size={20} color="#4f46e5" />}     title="30-Min Delivery" sub="Express to your doorstep" />
-          <TrustItem icon={<Tag size={20} color="#16a34a" />}      title="Best Prices"     sub="No middlemen, no markup" />
-          <TrustItem icon={<Shield size={20} color="#f59e0b" />}   title="Freshly Packed"  sub="Quality checked always" />
-          <TrustItem icon={<RotateCw size={20} color="#ec4899" />} title="Easy Returns"    sub="Hassle-free 7-day returns" isLast />
-        </section>
-
-        {/* ══ FULL CATEGORY GRID ════════════════════════════════════════════ */}
-        {categories.length > 0 && (
-          <section style={{ padding: '0 0 48px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                  <div style={{ width: 3, height: 16, borderRadius: 2, background: 'linear-gradient(180deg,#1a1a6e,#4f46e5)' }} />
-                  <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2.5, textTransform: 'uppercase', color: '#9ca3af', margin: 0 }}>BROWSE</p>
-                </div>
-                <h2 style={{ fontSize: 24, fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-0.3px' }}>Shop by Category</h2>
-              </div>
-              <button
-                onClick={() => navigate('/categories')}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: '1.5px solid #e2e8f0', borderRadius: 10, padding: '8px 16px', fontWeight: 700, fontSize: 12, color: '#374151', cursor: 'pointer', transition: 'all 0.2s' }}
-                onMouseOver={e => { e.currentTarget.style.background = '#1a1a6e'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#1a1a6e'; }}
-                onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
-              >
-                View All <ArrowRight size={13} />
-              </button>
-            </div>
-
-            <div style={{ position: 'relative' }}>
-              <div id="cat-scroll" style={{ display: 'flex', gap: 22, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 6, scrollBehavior: 'smooth' }}>
-                {categories.map(cat => (
-                  <div key={cat.id} onClick={() => navigate(`/category/${cat.id}`)}
-                    style={{ flexShrink: 0, width: 145, background: '#fff', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', border: '1px solid #f1f5f9', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', transition: 'all 0.22s' }}
-                    onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(79,70,229,0.12)'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
-                    onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
-                  >
-                    <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', padding: 12 }}>
-                      <img src={optimizeImage(cat.imageURL, 150)} alt={cat.name} loading="lazy" width="120" height="75" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
-                    </div>
-                    <div style={{ padding: '9px 11px 12px' }}>
-                      <div style={{ fontWeight: 700, fontSize: 12.5, color: '#111827' }}>{cat.name}</div>
-                      <div style={{ fontSize: 10.5, color: '#9ca3af', fontWeight: 600, marginTop: 2 }}>{cat.productCount ?? 0} items</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {[{ dir: -1, side: { left: -16 } }, { dir: 1, side: { right: -16 } }].map(({ dir, side }) => (
-                <button key={dir}
-                  onClick={() => document.getElementById('cat-scroll').scrollBy({ left: dir * 500, behavior: 'smooth' })}
-                  style={{ position: 'absolute', top: '45%', transform: 'translateY(-50%)', ...side, background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.10)', zIndex: 10, color: '#6b7280', transition: 'all 0.2s' }}
-                  onMouseOver={e => { e.currentTarget.style.background = '#1a1a6e'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#1a1a6e'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
-                >
-                  {dir === -1 ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ══ DEAL OF THE WEEK ══════════════════════════════════════════════ */}
-        <DealOfWeekSection deals={deals} />
-
-        {/* ══ FESTIVAL + ML ═════════════════════════════════════════════════ */}
-        <Suspense fallback={<div>Loading...</div>}><FestivalOfferSection /></Suspense>
-        {user && <Suspense fallback={<div>Loading...</div>}><RecommendedSection /></Suspense>}
-        {user && <Suspense fallback={<div>Loading...</div>}><FrequentlyViewedSection /></Suspense>}
-
-        {/* ══ PRODUCT SECTIONS ══════════════════════════════════════════════ */}
-        {trendingProducts.length > 0 && (
-          <ProductSection
-            icon={<Flame size={18} color="#ef4444" />}
-            label="TRENDING NOW" title="🔥 Hot This Week"
-            products={trendingProducts}
-          />
-        )}
-        {mostBought.length > 0 && (
-          <ProductSection
-            icon={<Star size={18} color="#f59e0b" fill="#f59e0b" />}
-            label="BESTSELLERS" title="🏆 Most Bought"
-            products={mostBought}
-          />
-        )}
-        {user && buyAgain.length > 0 && (
-          <ProductSection
-            icon={<RotateCcw size={18} color="#8b5cf6" />}
-            label="REORDER" title="🔁 Buy Again"
-            products={buyAgain} subtitle="Based on your previous purchases"
-          />
-        )}
-
-        {trendingCategories.length > 0 && (
-          <section style={{ padding: '0 0 60px' }}>
-            <SectionHeader icon={<TrendingUp size={18} color="#4f46e5" />} label="POPULAR" title="📈 Trending Categories" />
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(trendingCategories.length, 6)}, 1fr)`, gap: 14, marginTop: 20 }}>
-              {trendingCategories.map(cat => (
-                <div key={cat.id} onClick={() => navigate(`/category/${cat.id}`)}
-                  style={{ background: '#fff', borderRadius: 16, padding: 16, cursor: 'pointer', textAlign: 'center', border: '1px solid #f1f5f9', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', transition: 'all 0.22s' }}
-                  onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(79,70,229,0.12)'; e.currentTarget.style.borderColor = '#c7d2fe'; }}
-                  onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
-                >
-                  <img src={optimizeImage(cat.imageURL, 100)} alt={cat.name} loading="lazy" width="56" height="56" style={{ height: 56, width: 56, objectFit: 'contain', margin: '0 auto 8px' }} />
-                  <div style={{ fontWeight: 700, fontSize: 12.5, color: '#111827' }}>{cat.name}</div>
-                  <div style={{ fontSize: 10.5, color: '#9ca3af', fontWeight: 600, marginTop: 3 }}>{cat.totalOrders} orders</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
       </div>
 

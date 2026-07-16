@@ -789,14 +789,14 @@
 //   );
 // }
 
-// const iconBtn = {
-//   position: 'relative',
-//   display: 'flex', alignItems: 'center', justifyContent: 'center',
-//   width: 38, height: 38, borderRadius: 10,
-//   background: '#f9fafb', border: '1.5px solid #e5e7eb',
-//   color: '#6b7280', textDecoration: 'none',
-//   transition: 'all 0.2s', flexShrink: 0,
-// };
+const iconBtn = {
+  position: 'relative',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  width: 44, height: 44, borderRadius: 10,
+  background: '#f9fafb', border: '1.5px solid #e5e7eb',
+  color: '#4b5563', textDecoration: 'none',
+  transition: 'all 0.2s', flexShrink: 0,
+};
 
 // const adminDropItem = {
 //   display: 'block', width: '100%', padding: '10px 16px',
@@ -1066,7 +1066,7 @@ export default function Navbar() {
                       <img src={cat.imageURL} alt={cat.name} style={{ width: 30, height: 30, objectFit: "contain", borderRadius: 6, background: "#f9fafb" }} />
                       <div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{cat.name}</div>
-                        <div style={{ fontSize: 11, color: "#9ca3af" }}>{cat.productCount ?? cat.products?.length ?? 0} products</div>
+                        <div style={{ fontSize: 11, color: "#6b7280" }}>{cat.productCount ?? cat.products?.length ?? 0} products</div>
                       </div>
                     </button>
                   ))
@@ -1094,7 +1094,8 @@ export default function Navbar() {
               />
               <button
                 type="submit"
-                style={{ background: "#4f46e5", color: "#fff", border: "none", padding: "9px 18px", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" }}
+                aria-label="Submit Search"
+                style={{ background: "#4f46e5", color: "#fff", border: "none", padding: "9px 18px", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", minHeight: 44 }}
                 onMouseOver={e => e.currentTarget.style.background = "#4338ca"}
                 onMouseOut={e => e.currentTarget.style.background = "#4f46e5"}
               >
@@ -1127,12 +1128,12 @@ export default function Navbar() {
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                          <div style={{ fontSize: 11, color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.description}</div>
+                          <div style={{ fontSize: 11, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.description}</div>
                         </div>
                         <span style={{ fontSize: 13, fontWeight: 700, color: "#16a34a", flexShrink: 0 }}>₹{item.price}</span>
                       </div>
                     ))
-                    : <div style={{ padding: 16, textAlign: "center", color: "#9ca3af", fontSize: 13 }}>No products found</div>
+                    : <div style={{ padding: 16, textAlign: "center", color: "#6b7280", fontSize: 13 }}>No products found</div>
                 }
               </div>
             )}
@@ -1154,7 +1155,7 @@ export default function Navbar() {
             </a>
 
             {/* Wishlist */}
-            <Link to="/wishlist" style={iconBtn}
+            <Link to="/wishlist" style={iconBtn} aria-label="Wishlist"
               onMouseOver={e => { e.currentTarget.style.background = "rgba(255,255,255,0.16)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"; }}
               onMouseOut={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}>
               <Heart size={16} color="rgba(255,255,255,0.8)" strokeWidth={1.8} />
@@ -1162,7 +1163,7 @@ export default function Navbar() {
             </Link>
 
             {/* Cart */}
-            <Link to="/cart" style={iconBtn}
+            <Link to="/cart" style={iconBtn} aria-label="Cart"
               onMouseOver={e => { e.currentTarget.style.background = "rgba(255,255,255,0.16)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"; }}
               onMouseOut={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}>
               <ShoppingCart size={16} color="rgba(255,255,255,0.8)" strokeWidth={1.8} />
@@ -1174,7 +1175,9 @@ export default function Navbar() {
               <div style={{ position: "relative" }} ref={userMenuRef}>
                 <button
                   onClick={() => setMenuOpen(s => !s)}
-                  style={{ display: "flex", alignItems: "center", gap: 7, background: menuOpen ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "6px 11px", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#fff" }}
+                  aria-label="User Menu"
+                  aria-expanded={menuOpen}
+                  style={{ display: "flex", alignItems: "center", gap: 7, background: menuOpen ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "6px 11px", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#fff", minHeight: 44 }}
                   onMouseOver={e => { if (!menuOpen) e.currentTarget.style.background = "rgba(255,255,255,0.14)"; }}
                   onMouseOut={e => { if (!menuOpen) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
                 >
@@ -1197,7 +1200,7 @@ export default function Navbar() {
                         </div>
                         <div>
                           <div style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{getDisplayName(effectiveUser)}</div>
-                          <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 1 }}>{effectiveUser.email}</div>
+                          <div style={{ fontSize: 11, color: "#4b5563", marginTop: 1 }}>{effectiveUser.email}</div>
                         </div>
                       </div>
                     </div>

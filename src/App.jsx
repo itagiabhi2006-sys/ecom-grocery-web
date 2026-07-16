@@ -7,6 +7,7 @@ import api from "./Api";
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
@@ -103,8 +104,9 @@ useEffect(() => {
 }, [user]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '18px', fontWeight: 'bold' }}>Loading...</div>}>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '18px', fontWeight: 'bold' }}>Loading...</div>}>
       <Routes>
 
         {/* ════════════════════════════════════════════════════════════════════
@@ -183,7 +185,8 @@ useEffect(() => {
         } />
 
       </Routes>
-    </Suspense>
-    </QueryClientProvider>
+      </Suspense>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

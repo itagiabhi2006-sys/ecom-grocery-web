@@ -1,6 +1,6 @@
 // ================== ProductCard.jsx ==================
 // Blue-themed card — matches modern e-commerce design
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart, Eye, Star, Heart } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -35,7 +35,7 @@ const invalidateWishlistCache = (userId) => {
   wishlistPromises[userId] = null;
 };
 
-export default function ProductCard({ p }) {
+const ProductCard = memo(function ProductCard({ p }) {
   const [isHovered, setIsHovered]            = useState(false)
   const [isLiked, setIsLiked]                = useState(false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
@@ -197,7 +197,7 @@ export default function ProductCard({ p }) {
   }
 
   // ── Add to Cart ──────────────────────────────────────────────────────────────
-  const handleAddToCart = async (e) => {
+  const handleAddToCart = useCallback(async (e) => {
     e.preventDefault(); e.stopPropagation()
     if (!user) { 
       toast.error('Please login to add to cart')
@@ -226,7 +226,7 @@ export default function ProductCard({ p }) {
     } finally { 
       setAddingToCart(false) 
     }
-  }
+  }, [user, p.id, p.price])
 
   // ── Blue palette constants ─────────────────────────────────────────────────
   const BLUE_DARK   = '#0f3460'
@@ -576,4 +576,6 @@ export default function ProductCard({ p }) {
       <style>{`@keyframes pcSpin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
-}
+})
+
+export default ProductCard;
