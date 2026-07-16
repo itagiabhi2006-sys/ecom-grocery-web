@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../Api';
 import { ArrowRight, Package } from 'lucide-react';
+import { optimizeImage } from '../utils/imageOptimizer';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -115,8 +116,11 @@ export default function CategoriesPage() {
                 }}>
                   {cat.imageURL ? (
                     <img
-                      src={cat.imageURL}
+                      src={optimizeImage(cat.imageURL, 200)}
                       alt={cat.name}
+                      loading="lazy"
+                      width={160}
+                      height={160}
                       style={{
                         maxHeight: '100%',
                         maxWidth: '100%',

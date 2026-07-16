@@ -6,6 +6,7 @@ import { ShoppingCart, Eye, Star, Heart } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../Api'
 import { useAuth } from '../contexts/AuthContext'
+import { optimizeImage } from '../utils/imageOptimizer'
 
 // Module-level cache to prevent multiple identical requests when rendering many ProductCards
 let wishlistCache = {};
@@ -377,9 +378,11 @@ export default function ProductCard({ p }) {
           )}
 
           <img
-            src={p.imageURL || '/no-image.png'}
+            src={optimizeImage(p.imageURL, 300) || '/no-image.png'}
             alt={p.title}
             loading="lazy"
+            width={300}
+            height={300}
             onLoad={() => setImageLoaded(true)}
             style={{
               maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',

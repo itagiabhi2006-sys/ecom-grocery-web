@@ -4,8 +4,8 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../Api';
 import ProductCard from '../components/ProductCard';
+import { optimizeImage } from '../utils/imageOptimizer';
 import { ShoppingCart, Zap, ArrowLeft, Package, Shield, RotateCcw, Truck, Star, ChevronRight, ChevronLeft } from 'lucide-react';
-
 // ─── Advanced Product Slider ────────────────────────────────────────────────
 function ProductSlider({ title, emoji, label, products }) {
   const [index, setIndex] = useState(0);
@@ -308,8 +308,11 @@ export default function ProductPage() {
             </div>
           )}
           <img
-            src={product.imageURL}
+            src={optimizeImage(product.imageURL, 400)}
             alt={product.title}
+            loading="lazy"
+            width={400}
+            height={320}
             onClick={() => setImgZoomed(true)}
             style={{
               maxHeight: 320, maxWidth: '100%', objectFit: 'contain',
@@ -428,7 +431,7 @@ export default function ProductPage() {
           onClick={() => setImgZoomed(false)}
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', backdropFilter: 'blur(8px)' }}
         >
-          <img src={product.imageURL} alt={product.title} style={{ maxHeight: '85vh', maxWidth: '85vw', objectFit: 'contain', borderRadius: 16 }} />
+          <img src={optimizeImage(product.imageURL, 800)} alt={product.title} loading="lazy" style={{ maxHeight: '85vh', maxWidth: '85vw', objectFit: 'contain', borderRadius: 16 }} />
         </div>
       )}
 

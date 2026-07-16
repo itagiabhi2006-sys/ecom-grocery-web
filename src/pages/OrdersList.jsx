@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../Api";
 import { useAuth } from "../contexts/AuthContext";
+import { optimizeImage } from '../utils/imageOptimizer';
 
 export default function OrdersList() {
   const { user } = useAuth();
@@ -305,8 +306,11 @@ export default function OrdersList() {
                       {/* Product image */}
                       <div style={{ width: 56, height: 56, borderRadius: 8, background: "#f9fafb", border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                         <img
-                          src={order.productList[0]?.productImage || "/placeholder.png"}
+                          src={optimizeImage(order.productList[0]?.productImage, 100) || "/placeholder.png"}
                           alt={order.productList[0]?.productName}
+                          loading="lazy"
+                          width={48}
+                          height={48}
                           style={{ width: 48, height: 48, objectFit: "contain" }}
                         />
                         {order.productList.length > 1 && (

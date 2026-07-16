@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../Api";
 import { useAuth } from "../contexts/AuthContext";
+import { optimizeImage } from '../utils/imageOptimizer';
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
@@ -220,7 +221,7 @@ export default function CartPage() {
                 }}>
                   {/* Image */}
                   <div style={{ width: 56, height: 56, borderRadius: 8, background: "#f9fafb", border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <img src={prod.imageURL || "/no-image.png"} alt={prod.title || "Product"} loading="lazy" style={{ width: 48, height: 48, objectFit: "contain" }} />
+                    <img src={optimizeImage(prod.imageURL, 100) || "/no-image.png"} alt={prod.title || "Product"} loading="lazy" width={48} height={48} style={{ width: 48, height: 48, objectFit: "contain" }} />
                   </div>
 
                   {/* Info */}
@@ -320,7 +321,7 @@ export default function CartPage() {
                           className="rec-card-hover"
                         >
                           <div style={{ width: "100%", height: 70, background: "#fff", borderRadius: 6, border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                            <img src={p.imageURL || "/no-image.png"} alt={p.title} loading="lazy" style={{ height: 56, width: 56, objectFit: "contain" }} />
+                            <img src={optimizeImage(p.imageURL, 100) || "/no-image.png"} alt={p.title} loading="lazy" width={56} height={56} style={{ height: 56, width: 56, objectFit: "contain" }} />
                           </div>
                           <p style={{ fontSize: 11, fontWeight: 500, color: "#374151", textAlign: "center", margin: "0 0 4px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.3 }}>{p.title}</p>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#059669", margin: "0 0 6px" }}>₹{rPrice}</p>

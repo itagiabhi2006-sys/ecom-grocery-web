@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../Api";
 import { useAuth } from "../contexts/AuthContext";
+import { optimizeImage } from '../utils/imageOptimizer';
 
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState([]);
@@ -203,7 +204,7 @@ export default function WishlistPage() {
                   onClick={() => prod.id && navigate(`/products/${prod.id}`)}
                   style={{ width: 56, height: 56, borderRadius: 8, background: "#f9fafb", border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
                 >
-                  <img src={prod.imageURL || "/no-image.png"} alt={title} style={{ width: 48, height: 48, objectFit: "contain" }} />
+                  <img src={optimizeImage(prod.imageURL, 100) || "/no-image.png"} alt={title} loading="lazy" width={48} height={48} style={{ width: 48, height: 48, objectFit: "contain" }} />
                 </div>
 
                 {/* Info */}

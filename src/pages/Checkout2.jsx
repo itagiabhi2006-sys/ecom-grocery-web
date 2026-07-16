@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../Api";
 import { useAuth } from "../contexts/AuthContext";
+import { optimizeImage } from '../utils/imageOptimizer';
 import {
   MapPin, Trash2, Check, Package,
   Plus, ArrowRight, Edit2,
@@ -277,8 +278,11 @@ export default function Checkout2() {
               {/* Product Image & Info */}
               <div style={{ display: "flex", gap: 12, marginBottom: 16, padding: "12px", background: "#f9fafb", borderRadius: 10 }}>
                 <img
-                  src={product.imageURL || "/no-image.png"}
+                  src={optimizeImage(product.imageURL, 100) || "/no-image.png"}
                   alt={product.title}
+                  loading="lazy"
+                  width={64}
+                  height={64}
                   style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 8, background: "#fff", border: "1px solid #f0f0f0" }}
                 />
                 <div style={{ flex: 1 }}>
