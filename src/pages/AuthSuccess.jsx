@@ -1,12 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from '../Api';
 import { useAuth } from "../contexts/AuthContext";
 
 function AuthSuccess() {
   const navigate = useNavigate();
-   const { login } = useAuth();
+  const { login } = useAuth();
+  const hasCalled = useRef(false);
+
   useEffect(() => {
+    if (hasCalled.current) return;
+    
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
